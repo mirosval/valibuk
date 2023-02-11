@@ -85,4 +85,28 @@ mod tests {
         };
         assert_tokens_eq!(&expected, &after);
     }
+
+    #[test]
+    fn test_minimal_no_validated_fields_custom_error() {
+        let before = quote! {
+            #[validation_error(E)]
+            struct A {
+                a: i32
+            }
+        };
+        let after = builder_validator_core(before);
+        let expected = quote! {
+            struct UnvalidatedA {
+                pub a: i32,
+            }
+            impl A {
+                pub fn from_unvalidated(
+                    unvalidated: UnvalidatedA,
+                ) -> ::core::result::Result<A, Vec<E>> {
+                    Ok(A { a: unvalidated.a })
+                }
+            }
+        };
+        assert_tokens_eq!(&expected, &after);
+    }
 }
