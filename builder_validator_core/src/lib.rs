@@ -78,7 +78,7 @@ mod tests {
             impl A {
                 pub fn from_unvalidated(
                     unvalidated: UnvalidatedA,
-                ) -> ::core::result::Result<A, Vec<::std::error::Error>> {
+                ) -> ::core::result::Result<A, Vec<::std::string::String>> {
                     Ok(A { a: unvalidated.a })
                 }
             }

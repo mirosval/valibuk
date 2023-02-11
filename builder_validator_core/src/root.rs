@@ -38,7 +38,7 @@ impl<'a> ValidatedDeriv<'a> {
             })
             .last()
             .unwrap_or(parse_quote! {
-                ::std::error::Error
+                ::std::string::String
             });
         let fields = fields
             .enumerate()
