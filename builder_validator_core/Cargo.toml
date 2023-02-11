@@ -1,0 +1,16 @@
+[package]
+name = "builder_validator_core"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+syn = { version = "1", features = ["extra-traits", "full", "fold"] }
+quote = "1"
+proc-macro2 = "1"
+proc-macro-error = "1"
+
+[dev-dependencies]
+colored-diff = "0.2.3"
+assert_tokens_eq = "0.1.0"

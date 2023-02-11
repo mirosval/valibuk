@@ -1,0 +1,14 @@
+[package]
+name = "builder_validator_derive"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+builder_validator_core = { version = "0.1.0", path = "../builder_validator_core"}
+syn = { version = "1", features = ["full", "extra-traits", "fold"] }
+quote = "1"
+proc-macro2 = "1"
+proc-macro-error = "1"

@@ -1,0 +1,17 @@
+[package]
+name = "builder_validator"
+version = "0.1.0"
+edition = "2021"
+authors = ["Miroslav Zoricak"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace]
+members = ["builder_validator_derive", "builder_validator_core"]
+
+[dependencies]
+builder_validator_derive = {version = "0.1.0", path = "builder_validator_derive"}
+
+[dev-dependencies]
+trybuild = "1.0"
+
