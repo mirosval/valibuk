@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse2, parse_quote, spanned::Spanned, DeriveInput, Error, Token};
+use syn::{spanned::Spanned, Error};
 
 #[derive(Debug)]
 pub(crate) struct ValidatedFieldDeriv<'a> {

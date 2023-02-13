@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse2, parse_quote, spanned::Spanned, DeriveInput, Error, Token};
+use syn::{parse_quote, Attribute, Error, Token};
 
 use crate::field::ValidatedFieldDeriv;
 
@@ -28,18 +28,7 @@ impl<'a> ValidatedDeriv<'a> {
             &format!("{}Validators", ast.ident),
             proc_macro2::Span::call_site(),
         );
-        let custom_validation_error_ty: syn::Type = ast
-            .attrs
-            .iter()
-            .filter(|a| a.path.is_ident("validation_error"))
-            .map(|a| {
-                let err: syn::Type = a.parse_args().expect("parse validation_error");
-                err
-            })
-            .last()
-            .unwrap_or(parse_quote! {
-                ::std::string::String
-            });
+        let custom_validation_error_ty: syn::Type = Self::validation_error_from_attrs(&ast.attrs);
         let fields = fields
             .enumerate()
             .map(|(_, f)| ValidatedFieldDeriv::new(&f, custom_validation_error_ty.clone()))
@@ -53,6 +42,20 @@ impl<'a> ValidatedDeriv<'a> {
             fields,
             custom_validation_error_ty,
         })
+    }
+
+    fn validation_error_from_attrs(attrs: &[Attribute]) -> syn::Type {
+        attrs
+            .iter()
+            .filter(|a| a.path.is_ident("validation_error"))
+            .map(|a| {
+                let err: syn::Type = a.parse_args().expect("parse validation_error");
+                err
+            })
+            .last()
+            .unwrap_or(parse_quote! {
+                ::std::string::String
+            })
     }
 
     pub fn validated_impl(&self) -> Result<TokenStream, Error> {
@@ -173,7 +176,9 @@ impl<'a> ValidatedDeriv<'a> {
                     (#v)(unvalidated.#field)
                 }
             } else {
-                quote!()
+                quote! {
+                    unvalidated.#field
+                }
             }
         });
         quote! {
@@ -184,8 +189,15 @@ impl<'a> ValidatedDeriv<'a> {
     fn match_validator_ok(&self) -> TokenStream {
         let fields = self.fields.iter().map(|f| {
             let name = f.name;
-            quote! {
-                Ok(#name)
+            let validator = &f.field_validator;
+            if validator.is_some() {
+                quote! {
+                    Ok(#name)
+                }
+            } else {
+                quote! {
+                    #name
+                }
             }
         });
         quote! {
@@ -203,10 +215,15 @@ impl<'a> ValidatedDeriv<'a> {
     fn match_validator_error_push(&self) -> TokenStream {
         let fields = self.fields.iter().map(|f| {
             let name = f.name;
-            quote! {
-                if let Err(e) = #name {
-                    errors.push(e);
+            let validator = &f.field_validator;
+            if validator.is_some() {
+                quote! {
+                    if let Err(e) = #name {
+                        errors.push(e);
+                    }
                 }
+            } else {
+                quote! {}
             }
         });
         quote! {
