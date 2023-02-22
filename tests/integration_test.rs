@@ -45,3 +45,9 @@ fn test_one_validated_one_not_validated_field() {
     assert_eq!(instance.a, a);
     assert_eq!(instance.b, b);
 }
+
+#[test]
+fn ui() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/ui/*.rs");
+}

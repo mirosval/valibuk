@@ -9,5 +9,8 @@ dev:
 
 .PHONY: expand
 expand:
-	cargo watch -c -x '+nightly expand --example validated_macro'
+	cargo watch -c -x '+nightly expand --test integration_test'
 
+.PHONY: trybuild-overwrite
+trybuild-overwrite:
+	TRYBUILD=overwrite cargo test --test integration_test

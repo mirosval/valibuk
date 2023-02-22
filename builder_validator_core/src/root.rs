@@ -29,6 +29,7 @@ impl<'a> ValidatedDeriv<'a> {
             proc_macro2::Span::call_site(),
         );
         let custom_validation_error_ty: syn::Type = Self::validation_error_from_attrs(&ast.attrs);
+        // dbg!(&custom_validation_error_ty);
         let fields = fields
             .enumerate()
             .map(|(_, f)| ValidatedFieldDeriv::new(&f, custom_validation_error_ty.clone()))
@@ -104,7 +105,9 @@ impl<'a> ValidatedDeriv<'a> {
             let match_validator_nok = &self.match_validator_nok();
             let match_validator_error_push = &self.match_validator_error_push();
             let constructor = self.constructor();
+            let validator_assertions = self.fields.iter().map(|f| f.build_field_assertions());
             quote! {
+                #( #validator_assertions )*
                 match (#match_validator_calls) {
                     (#match_validator_ok) => Ok(#constructor),
                     (#match_validator_nok) => {
@@ -159,8 +162,10 @@ impl<'a> ValidatedDeriv<'a> {
     fn validator_fields(&self) -> TokenStream {
         let validators_name = &self.validators_name;
         let ety = &self.custom_validation_error_ty;
+        let validator_assertions = self.fields.iter().map(|f| f.build_field_assertions());
         let validator_fields = self.fields.iter().map(|f| f.field_struct_def());
         quote! {
+            #( #validator_assertions )*
             let validators = #validators_name::<#ety> {
                 #( #validator_fields, )*
             };

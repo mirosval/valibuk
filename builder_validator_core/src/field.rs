@@ -22,6 +22,7 @@ impl<'a> ValidatedFieldDeriv<'a> {
                     args
                 })
                 .last();
+            // dbg!(&field_validator);
             Ok(ValidatedFieldDeriv {
                 name: &name,
                 ty: &field.ty,
@@ -30,6 +31,22 @@ impl<'a> ValidatedFieldDeriv<'a> {
             })
         } else {
             Err(Error::new(field.span(), "Nameless field in struct"))
+        }
+    }
+
+    /// Emits dummy code that fails to compile when the declared
+    /// type of the custom error does not match the signature of
+    /// the validator for this field.
+    pub fn build_field_assertions(&self) -> TokenStream {
+        let ty = self.ty;
+        let err = &self.custom_validation_error_ty;
+        let validator = &self.field_validator;
+        if let Some(v) = validator {
+            quote! {
+                let _: fn(#ty) -> Result<#ty, #err> = #validator;
+            }
+        } else {
+            quote!()
         }
     }
 
