@@ -109,4 +109,27 @@ mod tests {
         };
         assert_tokens_eq!(&expected, &after);
     }
+
+    #[test]
+    fn test_lifetime() {
+        let before = quote! {
+            struct A<'a> {
+                a: &'a str,
+            }
+        };
+        let after = builder_validator_core(before);
+        let expected = quote! {
+            struct UnvalidatedA<'a> {
+                pub a: &'a str
+            }
+            impl<'a> A<'a> {
+                pub fn from_unvalidated(
+                    unvalidated: UnvalidatedA,
+                    ) -> ::core::result::Result<A, Vec<::std::string::String>> {
+                    Ok(A { a: unvalidated.a })
+                }
+            }
+        };
+        assert_tokens_eq!(&expected, &after);
+    }
 }

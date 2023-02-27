@@ -8,6 +8,26 @@ fn is_positive(i: i32) -> Result<i32, String> {
     }
 }
 
+fn is_at_least<'a>(n: usize) -> impl Fn(&'a str) -> Result<&'a str, String> {
+    move |s| {
+        if s.len() >= n {
+            Ok(s)
+        } else {
+            Err("wrong".to_string())
+        }
+    }
+}
+
+fn is_at_least_3<'a>(a: &'a str) -> Result<&str, String> {
+    is_at_least::<'a>(3)(a)
+}
+
+#[test]
+fn ui() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/ui/*.rs");
+}
+
 #[test]
 fn test_no_validated_fields() {
     #[derive(Validated)]
@@ -47,7 +67,13 @@ fn test_one_validated_one_not_validated_field() {
 }
 
 #[test]
-fn ui() {
-    let t = trybuild::TestCases::new();
-    t.compile_fail("tests/ui/*.rs");
+fn test_lifetime() {
+    #[derive(Validated)]
+    struct A<'a> {
+        #[validator(is_at_least_3)]
+        a: &'a str,
+    }
+    let a: &str = "aaa";
+    let instance = A::from_unvalidated(UnvalidatedA { a }).expect("valid instance");
+    assert_eq!(instance.a, a);
 }

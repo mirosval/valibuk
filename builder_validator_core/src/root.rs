@@ -82,12 +82,13 @@ impl<'a> ValidatedDeriv<'a> {
     fn build_unvalidated_struct(&self) -> Result<TokenStream, Error> {
         let vis = &self.visibility;
         let name = &self.unvalidated_name;
+        let (_impl_generics, ty_generics, _where_clause) = self.generics.split_for_impl();
         let fields = self
             .fields
             .iter()
             .map(|f| f.build_unvalidated_struct_repr());
         Ok(quote! {
-            #vis struct #name {
+            #vis struct #name #ty_generics  {
                 #( #fields, )*
             }
         })
@@ -97,6 +98,7 @@ impl<'a> ValidatedDeriv<'a> {
         let name = &self.name;
         let unvalidated_name = &self.unvalidated_name;
         let ety = &self.custom_validation_error_ty;
+        let (impl_generics, ty_generics, _where_clause) = self.generics.split_for_impl();
         // let validator_fields = &self.validator_fields();
         let has_any_validated_fields = self.fields.iter().any(|f| f.field_validator.is_some());
         let body = if has_any_validated_fields {
@@ -124,10 +126,10 @@ impl<'a> ValidatedDeriv<'a> {
             }
         };
         Ok(quote! {
-            impl #name {
-                pub fn from_unvalidated(
+            impl #impl_generics #name #ty_generics {
+                pub fn from_unvalidated (
                     unvalidated: #unvalidated_name
-                ) -> ::core::result::Result<#name, Vec<#ety>> {
+                ) -> ::core::result::Result<#name , Vec<#ety>> {
                     #body
                 }
             }
@@ -136,6 +138,7 @@ impl<'a> ValidatedDeriv<'a> {
 
     fn constructor(&self) -> TokenStream {
         let name = self.name;
+        let (_impl_generics, ty_generics, _where_clause) = self.generics.split_for_impl();
         let fields = self.fields.iter().map(|f| f.name);
         quote! {
             #name {
@@ -236,3 +239,6 @@ impl<'a> ValidatedDeriv<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod test {}

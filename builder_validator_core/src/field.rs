@@ -61,9 +61,13 @@ impl<'a> ValidatedFieldDeriv<'a> {
     pub fn build_validators_struct_repr(&self) -> TokenStream {
         let name = self.name;
         let ty = self.ty;
+        let lifetime = match ty {
+            syn::Type::Reference(r) => &r.lifetime,
+            _ => &None,
+        };
         let ety = &self.custom_validation_error_ty;
         quote! {
-            pub #name: fn(#ty) -> ::core::result::Result<#ty, #ety>
+            pub #name: fn #lifetime (#ty) -> ::core::result::Result<#ty, #ety>
         }
     }
 
