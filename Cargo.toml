@@ -1,5 +1,5 @@
 [package]
-name = "builder_validator"
+name = "valibuk"
 version = "0.1.0"
 edition = "2021"
 authors = ["Miroslav Zoricak"]
@@ -7,10 +7,10 @@ authors = ["Miroslav Zoricak"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["builder_validator_derive", "builder_validator_core"]
+members = ["valibuk_derive", "valibuk_core"]
 
 [dependencies]
-builder_validator_derive = {version = "0.1.0", path = "builder_validator_derive"}
+valibuk_derive = {version = "0.1.0", path = "valibuk_derive"}
 
 [dev-dependencies]
 trybuild = "1.0"

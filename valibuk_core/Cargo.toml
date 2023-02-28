@@ -1,5 +1,5 @@
 [package]
-name = "builder_validator_core"
+name = "valibuk_core"
 version = "0.1.0"
 edition = "2021"
 

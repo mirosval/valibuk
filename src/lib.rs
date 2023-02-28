@@ -1,3 +1,3 @@
-extern crate builder_validator_derive;
+extern crate valibuk_derive;
 
-pub use builder_validator_derive::Validated;
+pub use valibuk_derive::Validated;

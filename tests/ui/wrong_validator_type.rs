@@ -1,4 +1,4 @@
-use builder_validator::Validated;
+use valibuk::Validated;
 
 // Define a validator using String as error type
 fn is_positive(i: i32) -> Result<i32, String> {

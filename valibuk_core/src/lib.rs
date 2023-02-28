@@ -6,7 +6,7 @@ use syn::{parse2, spanned::Spanned, DeriveInput, Error};
 mod field;
 mod root;
 
-pub fn builder_validator_core(input: TokenStream) -> TokenStream {
+pub fn valibuk_core(input: TokenStream) -> TokenStream {
     let input = match parse2::<DeriveInput>(input) {
         Ok(i) => i,
         Err(e) => return e.to_compile_error(),
@@ -70,7 +70,7 @@ mod tests {
                 a: i32
             }
         };
-        let after = builder_validator_core(before);
+        let after = valibuk_core(before);
         let expected = quote! {
             struct UnvalidatedA {
                 pub a: i32,
@@ -94,7 +94,7 @@ mod tests {
                 a: i32
             }
         };
-        let after = builder_validator_core(before);
+        let after = valibuk_core(before);
         let expected = quote! {
             struct UnvalidatedA {
                 pub a: i32,
@@ -117,7 +117,7 @@ mod tests {
                 a: &'a str,
             }
         };
-        let after = builder_validator_core(before);
+        let after = valibuk_core(before);
         let expected = quote! {
             struct UnvalidatedA<'a> {
                 pub a: &'a str
