@@ -120,10 +120,12 @@ impl<'a> ValidatedDeriv<'a> {
             }
         };
         Ok(quote! {
-            impl #impl_generics #name #ty_generics {
-                pub fn from_unvalidated(
+            impl #impl_generics ::std::convert::TryFrom<#unvalidated_name #ty_generics>  for #name #ty_generics {
+                type Error = ::std::vec::Vec<#ety>;
+
+                fn try_from(
                     unvalidated: #unvalidated_name #ty_generics
-                ) -> ::core::result::Result<#name #ty_generics, Vec<#ety>> {
+                ) -> ::core::result::Result<Self, Self::Error> {
                     #body
                 }
             }

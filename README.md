@@ -16,7 +16,7 @@ fn is_positive(i: i32) -> Result<i32, String> {
   }
 }
 
-// 3. Derive (1) the `unvalidated` type and a `from_unvalidated` function
+// 3. Derive (1) the `unvalidated` type and a `std::convert::TryFrom` trait
 #[derive(Validated)]
 // 2. And a struct 
 struct A {
@@ -24,7 +24,7 @@ struct A {
 }
 let i: i32 = 1;
 // 4. Construct the instance of the original type from the unvalidated version
-let a = A::from_unvalidated(UnvalidatedA { a: i }).expect("valid instance");
+let a = A::try_from(UnvalidatedA { a: i }).expect("valid instance");
 assert_eq!(a.a, i);
 ```
 

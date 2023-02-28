@@ -35,7 +35,7 @@ fn test_no_validated_fields() {
         a: i32,
     }
     let i: i32 = 1;
-    let a = A::from_unvalidated(UnvalidatedA { a: i }).expect("valid instance");
+    let a = A::try_from(UnvalidatedA { a: i }).expect("valid instance");
     assert_eq!(a.a, i);
 }
 
@@ -47,7 +47,7 @@ fn test_one_validated_field() {
         a: i32,
     }
     let a: i32 = 1;
-    let instance = A::from_unvalidated(UnvalidatedA { a }).expect("valid instance");
+    let instance = A::try_from(UnvalidatedA { a }).expect("valid instance");
     assert_eq!(instance.a, a);
 }
 
@@ -62,7 +62,7 @@ fn test_one_validated_one_not_validated_field() {
     }
     let a: i32 = 1;
     let b: u8 = 2;
-    let instance = A::from_unvalidated(UnvalidatedA { a, _b: b }).expect("valid instance");
+    let instance = A::try_from(UnvalidatedA { a, _b: b }).expect("valid instance");
     assert_eq!(instance.a, a);
     assert_eq!(instance._b, b);
 }
@@ -75,7 +75,7 @@ fn test_lifetime() {
         a: &'a str,
     }
     let a: &str = "aaa";
-    let instance = A::from_unvalidated(UnvalidatedA { a }).expect("valid instance");
+    let instance = A::try_from(UnvalidatedA { a }).expect("valid instance");
     assert_eq!(instance.a, a);
 }
 
@@ -89,7 +89,7 @@ fn test_generics() {
     }
     let a: i32 = 1;
     let b: u8 = 2;
-    let instance = A::from_unvalidated(UnvalidatedA { a, _b: b }).expect("valid instance");
+    let instance = A::try_from(UnvalidatedA { a, _b: b }).expect("valid instance");
     assert_eq!(instance.a, a);
     assert_eq!(instance._b, b);
 }

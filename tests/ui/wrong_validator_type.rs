@@ -23,6 +23,6 @@ struct A {
 fn main() {
     let a: i32 = 1;
     // This should fail, because validator error type does not match the defined custom error type
-    let instance = A::from_unvalidated(UnvalidatedA { a }).expect("valid instance");
+    let instance = A::try_from(UnvalidatedA { a }).expect("valid instance");
     assert_eq!(instance.a, a);
 }

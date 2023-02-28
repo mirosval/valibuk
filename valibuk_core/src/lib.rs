@@ -75,10 +75,9 @@ mod tests {
             struct UnvalidatedA {
                 pub a: i32,
             }
-            impl A {
-                pub fn from_unvalidated(
-                    unvalidated: UnvalidatedA,
-                ) -> ::core::result::Result<A, Vec<::std::string::String>> {
+            impl ::std::convert::TryFrom<UnvalidatedA> for A {
+                type Error = ::std::vec::Vec<::std::string::String>;
+                fn try_from(unvalidated: UnvalidatedA) -> ::core::result::Result<Self, Self::Error> {
                     Ok(A { a: unvalidated.a })
                 }
             }
@@ -99,10 +98,9 @@ mod tests {
             struct UnvalidatedA {
                 pub a: i32,
             }
-            impl A {
-                pub fn from_unvalidated(
-                    unvalidated: UnvalidatedA,
-                ) -> ::core::result::Result<A, Vec<E>> {
+            impl ::std::convert::TryFrom<UnvalidatedA> for A {
+                type Error = ::std::vec::Vec<E>;
+                fn try_from(unvalidated: UnvalidatedA) -> ::core::result::Result<Self, Self::Error> {
                     Ok(A { a: unvalidated.a })
                 }
             }
@@ -122,10 +120,9 @@ mod tests {
             struct UnvalidatedA<'a> {
                 pub a: &'a str
             }
-            impl<'a> A<'a> {
-                pub fn from_unvalidated(
-                    unvalidated: UnvalidatedA<'a>,
-                    ) -> ::core::result::Result<A<'a>, Vec<::std::string::String>> {
+            impl<'a> ::std::convert::TryFrom<UnvalidatedA<'a>> for A<'a> {
+                type Error = ::std::vec::Vec<::std::string::String>;
+                fn try_from(unvalidated: UnvalidatedA<'a>) -> ::core::result::Result<Self, Self::Error> {
                     Ok(A { a: unvalidated.a })
                 }
             }
