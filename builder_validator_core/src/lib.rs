@@ -1,7 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::quote;
 use root::ValidatedDeriv;
-use syn::{parse2, parse_quote, spanned::Spanned, DeriveInput, Error, Token};
+use syn::{parse2, spanned::Spanned, DeriveInput, Error};
 
 mod field;
 mod root;
@@ -124,8 +124,8 @@ mod tests {
             }
             impl<'a> A<'a> {
                 pub fn from_unvalidated(
-                    unvalidated: UnvalidatedA,
-                    ) -> ::core::result::Result<A, Vec<::std::string::String>> {
+                    unvalidated: UnvalidatedA<'a>,
+                    ) -> ::core::result::Result<A<'a>, Vec<::std::string::String>> {
                     Ok(A { a: unvalidated.a })
                 }
             }

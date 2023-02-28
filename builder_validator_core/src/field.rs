@@ -43,7 +43,7 @@ impl<'a> ValidatedFieldDeriv<'a> {
         let validator = &self.field_validator;
         if let Some(v) = validator {
             quote! {
-                let _: fn(#ty) -> Result<#ty, #err> = #validator;
+                let _: fn(#ty) -> Result<#ty, #err> = #v;
             }
         } else {
             quote!()
@@ -55,31 +55,6 @@ impl<'a> ValidatedFieldDeriv<'a> {
         let ty = self.ty;
         quote! {
             pub #name: #ty
-        }
-    }
-
-    pub fn build_validators_struct_repr(&self) -> TokenStream {
-        let name = self.name;
-        let ty = self.ty;
-        let lifetime = match ty {
-            syn::Type::Reference(r) => &r.lifetime,
-            _ => &None,
-        };
-        let ety = &self.custom_validation_error_ty;
-        quote! {
-            pub #name: fn #lifetime (#ty) -> ::core::result::Result<#ty, #ety>
-        }
-    }
-
-    pub fn field_struct_def(&self) -> TokenStream {
-        let field_name = &self.name;
-        let field_validator = &self.field_validator;
-        if let Some(v) = field_validator {
-            quote! {
-                #field_name: #v
-            }
-        } else {
-            quote! {}
         }
     }
 }

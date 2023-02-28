@@ -9,7 +9,6 @@ pub struct ValidatedDeriv<'a> {
     visibility: &'a syn::Visibility,
     name: &'a syn::Ident,
     unvalidated_name: syn::Ident,
-    validators_name: syn::Ident,
     generics: &'a syn::Generics,
     custom_validation_error_ty: syn::Type,
     fields: Vec<ValidatedFieldDeriv<'a>>,
@@ -24,10 +23,6 @@ impl<'a> ValidatedDeriv<'a> {
             &format!("Unvalidated{}", ast.ident),
             proc_macro2::Span::call_site(),
         );
-        let validators_name = syn::Ident::new(
-            &format!("{}Validators", ast.ident),
-            proc_macro2::Span::call_site(),
-        );
         let custom_validation_error_ty: syn::Type = Self::validation_error_from_attrs(&ast.attrs);
         // dbg!(&custom_validation_error_ty);
         let fields = fields
@@ -38,7 +33,6 @@ impl<'a> ValidatedDeriv<'a> {
             visibility: &ast.vis,
             name: &ast.ident,
             unvalidated_name,
-            validators_name,
             generics: &ast.generics,
             fields,
             custom_validation_error_ty,
@@ -127,9 +121,9 @@ impl<'a> ValidatedDeriv<'a> {
         };
         Ok(quote! {
             impl #impl_generics #name #ty_generics {
-                pub fn from_unvalidated (
-                    unvalidated: #unvalidated_name
-                ) -> ::core::result::Result<#name , Vec<#ety>> {
+                pub fn from_unvalidated(
+                    unvalidated: #unvalidated_name #ty_generics
+                ) -> ::core::result::Result<#name #ty_generics, Vec<#ety>> {
                     #body
                 }
             }
@@ -138,7 +132,6 @@ impl<'a> ValidatedDeriv<'a> {
 
     fn constructor(&self) -> TokenStream {
         let name = self.name;
-        let (_impl_generics, ty_generics, _where_clause) = self.generics.split_for_impl();
         let fields = self.fields.iter().map(|f| f.name);
         quote! {
             #name {
@@ -159,19 +152,6 @@ impl<'a> ValidatedDeriv<'a> {
             #name {
                 #( #fields, )*
             }
-        }
-    }
-
-    fn validator_fields(&self) -> TokenStream {
-        let validators_name = &self.validators_name;
-        let ety = &self.custom_validation_error_ty;
-        let validator_assertions = self.fields.iter().map(|f| f.build_field_assertions());
-        let validator_fields = self.fields.iter().map(|f| f.field_struct_def());
-        quote! {
-            #( #validator_assertions )*
-            let validators = #validators_name::<#ety> {
-                #( #validator_fields, )*
-            };
         }
     }
 

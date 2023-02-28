@@ -6,6 +6,6 @@
 - [x] Support fields without validating
 - [x] Add UI tests using trybuild
 - [x] Support structs with lifetime params
-- [ ] Add automatic validators
-- [ ] Add validator combinators
 - [ ] Support structs with generics
+- [ ] Support global validators (take the whole struct)
+- [ ] Add validator combinators

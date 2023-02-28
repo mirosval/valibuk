@@ -57,13 +57,14 @@ fn test_one_validated_one_not_validated_field() {
     struct A {
         #[validator(is_positive)]
         a: i32,
-        b: u8,
+        _b: u8, // for whatever reason if this is just `b`, I get a warning
+                // about unused variables?
     }
     let a: i32 = 1;
     let b: u8 = 2;
-    let instance = A::from_unvalidated(UnvalidatedA { a, b }).expect("valid instance");
+    let instance = A::from_unvalidated(UnvalidatedA { a, _b: b }).expect("valid instance");
     assert_eq!(instance.a, a);
-    assert_eq!(instance.b, b);
+    assert_eq!(instance._b, b);
 }
 
 #[test]
@@ -76,4 +77,19 @@ fn test_lifetime() {
     let a: &str = "aaa";
     let instance = A::from_unvalidated(UnvalidatedA { a }).expect("valid instance");
     assert_eq!(instance.a, a);
+}
+
+#[test]
+fn test_generics() {
+    #[derive(Validated)]
+    struct A<T> {
+        #[validator(is_positive)]
+        a: i32,
+        _b: T,
+    }
+    let a: i32 = 1;
+    let b: u8 = 2;
+    let instance = A::from_unvalidated(UnvalidatedA { a, _b: b }).expect("valid instance");
+    assert_eq!(instance.a, a);
+    assert_eq!(instance._b, b);
 }
