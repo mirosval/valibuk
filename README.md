@@ -6,7 +6,7 @@ Correct-by-construction is a pattern that leverages the type system to guard aga
 
 ## A small example
 
-https://github.com/mirosval/valibuk/blob/c78d7578bac0d46874496fe9fd4bdb4b88b06220/examples/minimal.rs
+https://github.com/mirosval/valibuk/blob/c78d7578bac0d46874496fe9fd4bdb4b88b06220/examples/minimal.rs#L3-L25
 
 See more examples in `tests` and `examples`.
 
