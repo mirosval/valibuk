@@ -2,7 +2,14 @@
 name = "valibuk"
 version = "0.1.0"
 edition = "2021"
-authors = ["Miroslav Zoricak"]
+description = "Valibuk is a library and a set of macros implementing the correct-by-construction pattern."
+authors = ["Miroslav Zoricak <miroslav.zoricak@gmail.com>"]
+categories = ["rust-patterns", "development-tools"]
+keywords = ["validation", "builder", "derive", "macro"]
+homepage = "https://github.com/mirosval/valibuk"
+repository = "https://github.com/mirosval/valibuk"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

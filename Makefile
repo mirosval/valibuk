@@ -14,3 +14,9 @@ expand:
 .PHONY: trybuild-overwrite
 trybuild-overwrite:
 	TRYBUILD=overwrite cargo test --test integration_test
+
+.PHONY: publish
+publish:
+	cargo publish --manifext-path valibuk_core/Cargo.toml
+	cargo publish --manifext-path valibuk_derive/Cargo.toml
+	cargo publish 
