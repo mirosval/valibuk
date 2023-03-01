@@ -17,6 +17,6 @@ trybuild-overwrite:
 
 .PHONY: publish
 publish:
-	cargo publish --manifext-path valibuk_core/Cargo.toml
-	cargo publish --manifext-path valibuk_derive/Cargo.toml
+	cargo publish --manifest-path valibuk_core/Cargo.toml
+	cargo publish --manifest-path valibuk_derive/Cargo.toml
 	cargo publish 

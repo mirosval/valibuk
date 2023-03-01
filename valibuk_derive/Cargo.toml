@@ -9,7 +9,6 @@ keywords = ["validation", "builder", "derive", "macro"]
 homepage = "https://github.com/mirosval/valibuk"
 repository = "https://github.com/mirosval/valibuk"
 license = "MIT OR Apache-2.0"
-readme = "README.md"
 
 [lib]
 proc-macro = true
