@@ -43,7 +43,7 @@ impl<'a> ValidatedFieldDeriv<'a> {
         let validator = &self.field_validator;
         if let Some(v) = validator {
             quote! {
-                let _: fn(#ty) -> Result<#ty, #err> = #v;
+                let _: fn(#ty) -> ::std::result::Result<#ty, #err> = #v;
             }
         } else {
             quote!()

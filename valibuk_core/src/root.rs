@@ -82,6 +82,7 @@ impl<'a> ValidatedDeriv<'a> {
             .iter()
             .map(|f| f.build_unvalidated_struct_repr());
         Ok(quote! {
+            #[automatically_derived]
             #vis struct #name #ty_generics  {
                 #( #fields, )*
             }
@@ -105,11 +106,11 @@ impl<'a> ValidatedDeriv<'a> {
             quote! {
                 #( #validator_assertions )*
                 match (#match_validator_calls) {
-                    (#match_validator_ok) => Ok(#constructor),
+                    (#match_validator_ok) => ::std::result::Result::Ok(#constructor),
                     (#match_validator_nok) => {
-                        let mut errors: Vec<#ety> = Vec::new();
+                        let mut errors: ::std::vec::Vec<#ety> = ::std::vec::Vec::new();
                         #match_validator_error_push
-                        Err(errors)
+                        ::std::result::Result::Err(errors)
                     }
                 }
             }
@@ -120,6 +121,7 @@ impl<'a> ValidatedDeriv<'a> {
             }
         };
         Ok(quote! {
+            #[automatically_derived]
             impl #impl_generics ::std::convert::TryFrom<#unvalidated_name #ty_generics>  for #name #ty_generics {
                 type Error = ::std::vec::Vec<#ety>;
 
@@ -161,7 +163,7 @@ impl<'a> ValidatedDeriv<'a> {
         let fields = self.fields.iter().map(|f| {
             let field = f.name;
             let validator = &f.field_validator;
-            if let Some(v) = validator {
+            if let ::std::option::Option::Some(v) = validator {
                 quote! {
                     (#v)(unvalidated.#field)
                 }
@@ -182,7 +184,7 @@ impl<'a> ValidatedDeriv<'a> {
             let validator = &f.field_validator;
             if validator.is_some() {
                 quote! {
-                    Ok(#name)
+                    ::std::result::Result::Ok(#name)
                 }
             } else {
                 quote! {
@@ -208,7 +210,7 @@ impl<'a> ValidatedDeriv<'a> {
             let validator = &f.field_validator;
             if validator.is_some() {
                 quote! {
-                    if let Err(e) = #name {
+                    if let ::std::result::Result::Err(e) = #name {
                         errors.push(e);
                     }
                 }

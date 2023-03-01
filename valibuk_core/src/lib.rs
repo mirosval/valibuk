@@ -72,9 +72,11 @@ mod tests {
         };
         let after = valibuk_core(before);
         let expected = quote! {
+            #[automatically_derived]
             struct UnvalidatedA {
                 pub a: i32,
             }
+            #[automatically_derived]
             impl ::std::convert::TryFrom<UnvalidatedA> for A {
                 type Error = ::std::vec::Vec<::std::string::String>;
                 fn try_from(unvalidated: UnvalidatedA) -> ::core::result::Result<Self, Self::Error> {
@@ -95,9 +97,11 @@ mod tests {
         };
         let after = valibuk_core(before);
         let expected = quote! {
+            #[automatically_derived]
             struct UnvalidatedA {
                 pub a: i32,
             }
+            #[automatically_derived]
             impl ::std::convert::TryFrom<UnvalidatedA> for A {
                 type Error = ::std::vec::Vec<E>;
                 fn try_from(unvalidated: UnvalidatedA) -> ::core::result::Result<Self, Self::Error> {
@@ -117,9 +121,11 @@ mod tests {
         };
         let after = valibuk_core(before);
         let expected = quote! {
+            #[automatically_derived]
             struct UnvalidatedA<'a> {
                 pub a: &'a str
             }
+            #[automatically_derived]
             impl<'a> ::std::convert::TryFrom<UnvalidatedA<'a>> for A<'a> {
                 type Error = ::std::vec::Vec<::std::string::String>;
                 fn try_from(unvalidated: UnvalidatedA<'a>) -> ::core::result::Result<Self, Self::Error> {
