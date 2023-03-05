@@ -95,8 +95,9 @@ impl<'a> ValidatedDeriv<'a> {
         let ety = &self.custom_validation_error_ty;
         let (impl_generics, ty_generics, _where_clause) = self.generics.split_for_impl();
         // let validator_fields = &self.validator_fields();
-        let has_any_validated_fields = self.fields.iter().any(|f| f.field_validator.is_some());
-        let body = if has_any_validated_fields {
+        let has_any_validated_fields = self.fields.iter().any(|f| f.is_validated());
+        dbg!(&self.fields);
+        let body = if dbg!(has_any_validated_fields) {
             let match_validator_calls = &self.match_validator_calls();
             let match_validator_ok = &self.match_validator_ok();
             let match_validator_nok = &self.match_validator_nok();
@@ -136,7 +137,7 @@ impl<'a> ValidatedDeriv<'a> {
 
     fn constructor(&self) -> TokenStream {
         let name = self.name;
-        let fields = self.fields.iter().map(|f| f.name);
+        let fields = self.fields.iter().map(|f| f.get_name());
         quote! {
             #name {
                 #( #fields, )*
@@ -146,12 +147,10 @@ impl<'a> ValidatedDeriv<'a> {
 
     fn unvalidated_constructor(&self) -> TokenStream {
         let name = self.name;
-        let fields = self.fields.iter().map(|f| {
-            let name = f.name;
-            quote! {
-                #name: unvalidated.#name
-            }
-        });
+        let fields = self
+            .fields
+            .iter()
+            .map(|f| f.build_unvalidated_constructor());
         quote! {
             #name {
                 #( #fields, )*
@@ -160,64 +159,28 @@ impl<'a> ValidatedDeriv<'a> {
     }
 
     fn match_validator_calls(&self) -> TokenStream {
-        let fields = self.fields.iter().map(|f| {
-            let field = f.name;
-            let validator = &f.field_validator;
-            if let ::std::option::Option::Some(v) = validator {
-                quote! {
-                    (#v)(unvalidated.#field)
-                }
-            } else {
-                quote! {
-                    unvalidated.#field
-                }
-            }
-        });
+        let fields = self.fields.iter().map(|f| f.build_match_validator_call());
         quote! {
             #( #fields, )*
         }
     }
 
     fn match_validator_ok(&self) -> TokenStream {
-        let fields = self.fields.iter().map(|f| {
-            let name = f.name;
-            let validator = &f.field_validator;
-            if validator.is_some() {
-                quote! {
-                    ::std::result::Result::Ok(#name)
-                }
-            } else {
-                quote! {
-                    #name
-                }
-            }
-        });
+        let fields = self.fields.iter().map(|f| f.build_match_validator_ok());
         quote! {
             #( #fields, )*
         }
     }
 
     fn match_validator_nok(&self) -> TokenStream {
-        let fields = self.fields.iter().map(|f| f.name);
+        let fields = self.fields.iter().map(|f| f.get_name());
         quote! {
             #( #fields, )*
         }
     }
 
     fn match_validator_error_push(&self) -> TokenStream {
-        let fields = self.fields.iter().map(|f| {
-            let name = f.name;
-            let validator = &f.field_validator;
-            if validator.is_some() {
-                quote! {
-                    if let ::std::result::Result::Err(e) = #name {
-                        errors.push(e);
-                    }
-                }
-            } else {
-                quote! {}
-            }
-        });
+        let fields = self.fields.iter().map(|f| f.build_validator_error_push());
         quote! {
             #( #fields )*
         }
