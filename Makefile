@@ -5,11 +5,11 @@ setup:
 
 .PHONY: dev
 dev:
-	cargo watch -c -x 'check --workspace' -x 'test --workspace'
+	cargo watch --ignore wip -c -x 'check --workspace' -x 'test --workspace'
 
 .PHONY: expand
 expand:
-	cargo watch -c -x '+nightly expand --test integration_test'
+	cargo watch --ignore wip -c -x '+nightly expand --test integration_test'
 
 .PHONY: trybuild-overwrite
 trybuild-overwrite:

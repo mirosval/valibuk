@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{spanned::Spanned, Error};
+use syn::{parse::ParseStream, spanned::Spanned, Error};
 
 #[derive(Debug)]
 pub(crate) struct ValidatedFieldDeriv<'a> {
@@ -74,6 +74,17 @@ impl<'a> ValidatedFieldDeriv<'a> {
             crate::field::FieldValidator::None => quote! {
                 unvalidated.#field
             },
+            crate::field::FieldValidator::BoolFnWithError(v) => {
+                let f = &v.bool_fn;
+                let e = &v.error;
+                quote! {
+                    if (#f)(unvalidated.#field) {
+                        Ok(unvalidated.#field)
+                    } else {
+                        Err(#e)
+                    }
+                }
+            }
         }
     }
 
@@ -123,6 +134,14 @@ impl<'a> ValidatedFieldDeriv<'a> {
             FieldValidator::Closure(v) => quote! {
                 let _: fn(#ty) -> ::std::result::Result<#ty, #err> = #v;
             },
+            FieldValidator::BoolFnWithError(v) => {
+                let f = &v.bool_fn;
+                let e = &v.error;
+                quote! {
+                    let _: #err = #e;
+                    let _: fn(#ty) -> bool = #f;
+                }
+            }
             FieldValidator::None => quote!(),
         }
     }
@@ -141,12 +160,13 @@ impl<'a> ValidatedFieldDeriv<'a> {
 pub enum FieldValidator {
     Ident(syn::Ident),
     Closure(syn::ExprClosure),
+    BoolFnWithError(BoolFnWithError),
     None,
 }
 
 impl FieldValidator {
     pub fn is_some(&self) -> bool {
-        dbg!(self != &FieldValidator::None)
+        self != &FieldValidator::None
     }
 }
 
@@ -158,7 +178,28 @@ impl From<&syn::Attribute> for FieldValidator {
         let closure = value
             .parse_args::<syn::ExprClosure>()
             .map(|i| FieldValidator::Closure(i));
-        ident.or(closure).unwrap_or(FieldValidator::None)
+        let bool_fn_with_error = value
+            .parse_args_with(BoolFnWithError::parser)
+            .map(|i| FieldValidator::BoolFnWithError(i));
+        ident
+            .or(closure)
+            .or(bool_fn_with_error)
+            .unwrap_or(FieldValidator::None)
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub struct BoolFnWithError {
+    bool_fn: syn::ExprClosure,
+    error: syn::Expr,
+}
+
+impl BoolFnWithError {
+    fn parser(input: ParseStream<'_>) -> syn::Result<Self> {
+        let bool_fn: syn::ExprClosure = input.parse()?;
+        let _: syn::Token![,] = input.parse()?;
+        let error: syn::Expr = input.parse()?;
+        Ok(Self { bool_fn, error })
     }
 }
 
@@ -223,21 +264,25 @@ mod test {
 
     #[test]
     fn test_is_validated() {
-        let s: syn::DeriveInput = parse_quote! {
-            struct A {
-                a: i32
-            }
-        };
-        let f = first_field_deriv_from_struct(&s);
-        assert_eq!(f.is_validated(), false, "field a is not validated");
-        let s: syn::DeriveInput = parse_quote! {
-            struct A {
-                #[validator(abc)]
-                a: i32
-            }
-        };
-        let f = first_field_deriv_from_struct(&s);
-        assert_eq!(f.is_validated(), true, "field a is validated");
+        {
+            let s: syn::DeriveInput = parse_quote! {
+                struct A {
+                    a: i32
+                }
+            };
+            let f = first_field_deriv_from_struct(&s);
+            assert_eq!(f.is_validated(), false, "field a is not validated");
+        }
+        {
+            let s: syn::DeriveInput = parse_quote! {
+                struct A {
+                    #[validator(abc)]
+                    a: i32
+                }
+            };
+            let f = first_field_deriv_from_struct(&s);
+            assert_eq!(f.is_validated(), true, "field a is validated");
+        }
     }
 
     #[test]
@@ -271,6 +316,28 @@ mod test {
             let f = first_field_deriv_from_struct(&s);
             let expected: syn::ExprCall = parse_quote! {
                 (|a| if a > 0 { Ok(a) } else { Err("err") })(unvalidated.a)
+            };
+            assert_tokens_eq!(
+                f.build_match_validator_call(),
+                &expected,
+                "validator call for fn validator"
+            );
+        }
+        {
+            // inline "bool fn validator, error string" case
+            let s: syn::DeriveInput = parse_quote! {
+                struct A {
+                    #[validator(|ref a| a > 0, "Validation Err".to_string())]
+                    a: i32
+                }
+            };
+            let f = first_field_deriv_from_struct(&s);
+            let expected: syn::Expr = parse_quote! {
+                if (|ref a | a > 0)(unvalidated.a) {
+                    Ok(unvalidated.a)
+                } else {
+                    Err("Validation Err".to_string())
+                }
             };
             assert_tokens_eq!(
                 f.build_match_validator_call(),

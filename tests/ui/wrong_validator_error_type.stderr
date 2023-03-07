@@ -1,0 +1,26 @@
+error[E0308]: mismatched types
+ --> tests/ui/wrong_validator_error_type.rs:5:28
+  |
+3 | #[derive(Validated)]
+  |          --------- expected due to this
+4 | struct A {
+5 |     #[validator(|a| a > 0, "&str instead of String")] // Use inline boolean validator
+  |                            ^^^^^^^^^^^^^^^^^^^^^^^^- help: try using a conversion method: `.to_string()`
+  |                            |
+  |                            expected struct `String`, found `&str`
+
+error[E0308]: mismatched types
+ --> tests/ui/wrong_validator_error_type.rs:3:10
+  |
+3 | #[derive(Validated)]
+  |          ^^^^^^^^^- help: try using a conversion method: `.to_string()`
+  |          |
+  |          expected struct `String`, found `&str`
+  |          arguments to this function are incorrect
+  |
+note: associated function defined here
+ --> $RUST/alloc/src/vec/mod.rs
+  |
+  |     pub fn push(&mut self, value: T) {
+  |            ^^^^
+  = note: this error originates in the derive macro `Validated` (in Nightly builds, run with -Z macro-backtrace for more info)

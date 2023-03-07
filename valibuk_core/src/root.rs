@@ -96,8 +96,8 @@ impl<'a> ValidatedDeriv<'a> {
         let (impl_generics, ty_generics, _where_clause) = self.generics.split_for_impl();
         // let validator_fields = &self.validator_fields();
         let has_any_validated_fields = self.fields.iter().any(|f| f.is_validated());
-        dbg!(&self.fields);
-        let body = if dbg!(has_any_validated_fields) {
+        // dbg!(&self.fields);
+        let body = if has_any_validated_fields {
             let match_validator_calls = &self.match_validator_calls();
             let match_validator_ok = &self.match_validator_ok();
             let match_validator_nok = &self.match_validator_nok();
