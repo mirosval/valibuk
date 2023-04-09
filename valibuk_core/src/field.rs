@@ -74,17 +74,6 @@ impl<'a> ValidatedFieldDeriv<'a> {
             crate::field::FieldValidator::None => quote! {
                 unvalidated.#field
             },
-            crate::field::FieldValidator::BoolFnWithError(v) => {
-                let f = &v.bool_fn;
-                let e = &v.error;
-                quote! {
-                    if (#f)(unvalidated.#field) {
-                        Ok(unvalidated.#field)
-                    } else {
-                        Err(#e)
-                    }
-                }
-            }
         }
     }
 
@@ -134,14 +123,6 @@ impl<'a> ValidatedFieldDeriv<'a> {
             FieldValidator::Closure(v) => quote! {
                 let _: fn(#ty) -> ::std::result::Result<#ty, #err> = #v;
             },
-            FieldValidator::BoolFnWithError(v) => {
-                let f = &v.bool_fn;
-                let e = &v.error;
-                quote! {
-                    let _: #err = #e;
-                    let _: fn(#ty) -> bool = #f;
-                }
-            }
             FieldValidator::None => quote!(),
         }
     }
@@ -160,7 +141,6 @@ impl<'a> ValidatedFieldDeriv<'a> {
 pub enum FieldValidator {
     Ident(syn::Ident),
     Closure(syn::ExprClosure),
-    BoolFnWithError(BoolFnWithError),
     None,
 }
 
@@ -178,13 +158,7 @@ impl From<&syn::Attribute> for FieldValidator {
         let closure = value
             .parse_args::<syn::ExprClosure>()
             .map(|i| FieldValidator::Closure(i));
-        let bool_fn_with_error = value
-            .parse_args_with(BoolFnWithError::parser)
-            .map(|i| FieldValidator::BoolFnWithError(i));
-        ident
-            .or(closure)
-            .or(bool_fn_with_error)
-            .unwrap_or(FieldValidator::None)
+        ident.or(closure).unwrap_or(FieldValidator::None)
     }
 }
 

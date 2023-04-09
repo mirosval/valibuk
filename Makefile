@@ -17,3 +17,10 @@ publish:
 	cargo publish --manifest-path valibuk_derive/Cargo.toml
 	cargo publish 
 
+.PHONY: stable
+stable:
+	nix develop .#stable
+
+.PHONY: test
+test:
+	cargo test
