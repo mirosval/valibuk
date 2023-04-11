@@ -21,7 +21,4 @@ error[E0308]: mismatched types
    |
 note: associated function defined here
   --> $RUST/alloc/src/vec/mod.rs
-   |
-   |     pub fn push(&mut self, value: T) {
-   |            ^^^^
    = note: this error originates in the derive macro `Validated` (in Nightly builds, run with -Z macro-backtrace for more info)

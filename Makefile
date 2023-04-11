@@ -26,3 +26,15 @@ build:
 .PHONY: test
 test:
 	cargo test
+
+
+.PHONY: docker-test
+docker-test: 
+	docker run \
+		--rm \
+		-it \
+		-v $(shell pwd):/usr/src/valibuk \
+		-w /usr/src/valibuk \
+		#-e TRYBUILD=overwrite \
+		rust \
+		cargo test
