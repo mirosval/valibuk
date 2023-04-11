@@ -19,6 +19,10 @@ publish:
 	cargo publish --manifest-path valibuk_derive/Cargo.toml
 	cargo publish 
 
+.PHONY: build
+build:
+	cargo build
+
 .PHONY: test
 test:
 	cargo test
