@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{parse::ParseStream, spanned::Spanned, Error};
+use syn::{spanned::Spanned, Error};
 
 #[derive(Debug)]
 pub(crate) struct ValidatedFieldDeriv<'a> {
@@ -159,21 +159,6 @@ impl From<&syn::Attribute> for FieldValidator {
             .parse_args::<syn::ExprClosure>()
             .map(|i| FieldValidator::Closure(i));
         ident.or(closure).unwrap_or(FieldValidator::None)
-    }
-}
-
-#[derive(Debug, PartialEq)]
-pub struct BoolFnWithError {
-    bool_fn: syn::ExprClosure,
-    error: syn::Expr,
-}
-
-impl BoolFnWithError {
-    fn parser(input: ParseStream<'_>) -> syn::Result<Self> {
-        let bool_fn: syn::ExprClosure = input.parse()?;
-        let _: syn::Token![,] = input.parse()?;
-        let error: syn::Expr = input.parse()?;
-        Ok(Self { bool_fn, error })
     }
 }
 
