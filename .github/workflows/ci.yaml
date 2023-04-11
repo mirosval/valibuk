@@ -4,12 +4,16 @@ on:
   push:
   pull_request:
 
+env: 
+  RUST_BACKTRACE: 1
+
 jobs:
   build_and_test:
     name: valibuk - latest
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        fail-fast: false
         toolchain:
           - stable
           - beta
