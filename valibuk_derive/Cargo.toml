@@ -1,6 +1,6 @@
 [package]
 name = "valibuk_derive"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Macros for the Valibuk library"
 authors = ["Miroslav Zoricak <miroslav.zoricak@gmail.com>"]
@@ -14,7 +14,7 @@ license = "MIT OR Apache-2.0"
 proc-macro = true
 
 [dependencies]
-valibuk_core = { version = "0.1.0", path = "../valibuk_core"}
+valibuk_core = { version = "0.2.0", path = "../valibuk_core"}
 syn = { version = "1", features = ["full", "extra-traits", "fold"] }
 quote = "1"
 proc-macro2 = "1"

@@ -1,6 +1,6 @@
 [package]
 name = "valibuk"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Valibuk is a library and a set of macros implementing the correct-by-construction pattern."
 authors = ["Miroslav Zoricak <miroslav.zoricak@gmail.com>"]
@@ -17,7 +17,7 @@ readme = "README.md"
 members = ["valibuk_derive", "valibuk_core"]
 
 [dependencies]
-valibuk_derive = {version = "0.1.0", path = "valibuk_derive"}
+valibuk_derive = {version = "0.2.0", path = "valibuk_derive"}
 
 [dev-dependencies]
 trybuild = "1.0"
