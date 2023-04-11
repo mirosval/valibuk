@@ -93,3 +93,25 @@ fn test_generics() {
     assert_eq!(instance.a, a);
     assert_eq!(instance._b, b);
 }
+
+#[test]
+fn test_inline_validator() {
+    #[derive(Validated, Debug, PartialEq)]
+    struct A {
+        #[validator(|a| if a > 0 { Ok(a) } else { Err("validation err".to_string()) })]
+        a: i32,
+    }
+    {
+        // positive case
+        let a: i32 = 1;
+        let instance = A::try_from(UnvalidatedA { a }).expect("valid instance");
+        assert_eq!(instance.a, a);
+    }
+    {
+        // negative case
+        let a: i32 = -1;
+        let instance: Result<A, Vec<String>> = A::try_from(UnvalidatedA { a });
+        let expected = Err(vec!["validation err".to_string()]);
+        assert_eq!(instance, expected);
+    }
+}
