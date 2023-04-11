@@ -27,13 +27,13 @@
         devShells.default = pkgs.mkShell {
           packages = packages;
           buildInputs = [
-            fenix.packages.${system}.complete.toolchain
+            fenix.packages.${system}.stable.toolchain
           ] ++ buildInputs;
         };
-        devShells.stable = pkgs.mkShell {
+        devShells.nightly = pkgs.mkShell {
           packages = packages;
           buildInputs = [
-            fenix.packages.${system}.stable.toolchain
+            fenix.packages.${system}.complete.toolchain
           ] ++ buildInputs;
         };
       }

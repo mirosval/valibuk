@@ -5,11 +5,10 @@ error[E0308]: mismatched types
    |          --------- expected due to this
 ...
 19 |     #[validator(is_positive)] // Use the String validator
-   |                 ^^^^^^^^^^^ expected fn pointer, found fn item
+   |                 ^^^^^^^^^^^ expected struct `E`, found struct `String`
    |
    = note: expected fn pointer `fn(_) -> Result<_, E>`
                  found fn item `fn(_) -> Result<_, String> {is_positive}`
-   = note: when the arguments and return types match, functions can be coerced to function pointers
 
 error[E0308]: mismatched types
   --> tests/ui/wrong_validator_type.rs:16:10
@@ -17,10 +16,10 @@ error[E0308]: mismatched types
 16 | #[derive(Validated)]
    |          ^^^^^^^^^
    |          |
-   |          expected `E`, found `String`
+   |          expected struct `E`, found struct `String`
    |          arguments to this method are incorrect
    |
-note: method defined here
+note: associated function defined here
   --> $RUST/alloc/src/vec/mod.rs
    |
    |     pub fn push(&mut self, value: T) {

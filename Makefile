@@ -5,7 +5,9 @@ dev:
 
 .PHONY: expand
 expand:
-	cargo watch --ignore wip -c -x 'expand --test integration_test'
+	nix develop '.#nightly' --command \
+		bash -c \
+		"cargo watch --ignore wip -c -x 'expand --test integration_test'"
 
 .PHONY: trybuild-overwrite
 trybuild-overwrite:
@@ -16,10 +18,6 @@ publish:
 	cargo publish --manifest-path valibuk_core/Cargo.toml
 	cargo publish --manifest-path valibuk_derive/Cargo.toml
 	cargo publish 
-
-.PHONY: stable
-stable:
-	nix develop .#stable
 
 .PHONY: test
 test:
