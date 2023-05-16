@@ -15,7 +15,7 @@ proc-macro = true
 
 [dependencies]
 valibuk_core = { version = "0.2.0", path = "../valibuk_core"}
-syn = { version = "1", features = ["full", "extra-traits", "fold"] }
+syn = { version = "2", features = ["full", "extra-traits", "fold"] }
 quote = "1"
 proc-macro2 = "1"
 proc-macro-error = "1"
